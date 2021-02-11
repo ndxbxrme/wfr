@@ -1,0 +1,90 @@
+html
+  head
+    title Workr FreeAgent Report
+    link(rel='stylesheet', href='./index.css')
+  body
+    .controls
+      input#dateFrom(type='date')
+      input#dateTo(type='date')
+      input#search(type='text', onkeyup='app.search(this.value)')
+    .app
+    script#clients(type='text/template')
+      .clients {{clients.filter(client => client.name.toLowerCase().includes(app.getSearch().toLowerCase())).map(client => app.fill(app.$('script#client').innerText, client)).join('')}}
+    script#client(type='text/template')
+      .client(onclick='app.makeReport("{{subdomain}}")') {{name}}
+    script#report(type='text/template')
+      .report
+        input(type='button', onclick='app.gotoClients()', value='Back to clients')
+        .company
+          h3 Company
+          .item
+            label ID
+            .data {{id}}
+          .item
+            label Subdomain
+            .data {{subdomain}}
+          .item
+            label CRN
+            .data {{company_registration_number}}
+          .item
+            label Company Name
+            .data {{name}}
+        .dividends
+          h3 Shareholder Dividends
+          span {{dividends.map(dividend => app.fill(app.$('script#dividend').innerText, dividend)).join('')}}
+          span {{dividends.length===0&&'<div class="error">Date range error</div>'||''}}
+        .payroll
+          h3 Payroll
+          span {{payroll.map(payslip => app.fill(app.$('script#payslip').innerText, payslip)).join('')}}
+    script#loading(type='text/template')
+      h1 Loading report for {{name}}
+    script#dividend(type='text/template')
+      .dividend
+        .item
+          label Nominal
+          .data {{nominal}}
+        .item
+          label User
+          .data {{user}}
+        .item
+          label Name
+          .data {{name}}
+        .item
+          label NiNo
+          .data {{nino}}
+        .item
+          label Total Dividends
+          .data {{app.currency(totalDividends)}}
+    script#payslip(type='text/template')
+      .payslip
+        .item
+          label User
+          .data {{user}}
+        .item
+          label Name
+          .data {{name}}
+        .item
+          label NiNo
+          .data {{nino}}
+        .item
+          label Gross Pay
+          .data {{app.currency(grossPay)}}
+        .item
+          label Tax Paid
+          .data {{app.currency(taxPaid)}}
+        .item
+          label Student Loan Repayment
+          .data {{app.currency(studentLoanRepayment)}}
+        .item
+          label Postgrad Loan Repayment
+          .data {{app.currency(postgradLoanRepayment)}}
+        .item
+          label P45 Gross Pay
+          .data {{app.currency(p45GrossPay)}}
+        .item
+          label P45 Tax Paid
+          .data {{app.currency(p45TaxPaid)}}
+        
+        
+    script(type='text/javascript').
+      require('./renderer.js')

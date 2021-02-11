@@ -1,0 +1,26 @@
+body {
+  font-family: sans-serif;
+}
+.clients .client {
+  font-size: 0.9em;
+  line-height: 1.6em;
+  font-weight: bold;
+}
+.clients .client:hover {
+  color: #00f;
+}
+.page_report .controls {
+  display: none;
+}
+.report .item {
+  display: flex;
+  margin-bottom: 0.3em;
+  font-size: 0.88em;
+}
+.report .item label {
+  width: 13em;
+}
+.report .dividend,
+.report .payslip {
+  margin-bottom: 1em;
+}

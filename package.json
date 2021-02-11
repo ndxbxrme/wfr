@@ -1,0 +1,28 @@
+{
+  "name": "workr-freeagent-report",
+  "version": "0.0.1",
+  "description": "",
+  "main": "app/main.js",
+  "scripts": {
+    "build": "pug -o app src && stylus -o app src",
+    "start": "npm run build && electron .",
+    "pack": "npm run build && electron-builder --win -p always",
+    "packmac": "npm run build && electron-builder --mac -p always",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "electron": "^11.2.2",
+    "electron-builder": "^22.9.1",
+    "pug-cli": "^1.0.0-alpha6",
+    "stylus": "^0.54.8"
+  },
+  "dependencies": {
+    "decimalmath": "^1.5.2",
+    "electron-updater": "^4.3.5",
+    "fs-extra": "^9.1.0",
+    "superagent": "^6.0.0"
+  }
+}
