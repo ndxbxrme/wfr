@@ -1,24 +1,78 @@
 body
   font-family sans-serif
+  font-size .88em
+  
+.controls
+  display flex
+  justify-content space-between
+  .mr-dates
+    .item
+      margin-bottom .5em
+    label
+      width 6em
+      display inline-block
+  .mr-button
+    flex 1
+    margin-left 1em
   
 .clients
+  margin-top 1em
   .client
     font-size .9em
-    line-height 1.6em
+    line-height 2em
     font-weight bold
-    &:hover
-      color blue
-      
-.page_report
+    a
+      cursor pointer
+      &:hover
+        color #0033aa
+.spinner
+  width 3.6em
+.page_report, .page_fetching
   .controls
     display none
+.page_fetching, .loader
+  display flex
+  align-items center
+  justify-content center
+  .app
+    text-align center
+.loader
+  flex-direction column
   
 .report
   .item
     display flex
     margin-bottom .3em
-    font-size .88em
     label
       width 13em
   .dividend, .payslip
     margin-bottom 1em
+    
+body.progress
+  display flex
+  flex-direction column
+  height 100%
+  margin 0
+  padding .5em
+  box-sizing border-box
+  overflow hidden
+  .info
+    display flex
+    justify-content space-between
+    .text
+      flex 1
+    .ptext
+      margin 0 .5em
+  .progress-holder
+    width 100%
+    flex 1
+    position relative
+    margin .5em 0
+    .progress-bar
+      background black
+      position absolute
+      top 0
+      left 0
+      width 0
+      height 100%
+      transition width .1s

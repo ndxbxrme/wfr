@@ -1,21 +1,59 @@
 body {
   font-family: sans-serif;
+  font-size: 0.88em;
+}
+.controls {
+  display: flex;
+  justify-content: space-between;
+}
+.controls .mr-dates .item {
+  margin-bottom: 0.5em;
+}
+.controls .mr-dates label {
+  width: 6em;
+  display: inline-block;
+}
+.controls .mr-button {
+  flex: 1;
+  margin-left: 1em;
+}
+.clients {
+  margin-top: 1em;
 }
 .clients .client {
   font-size: 0.9em;
-  line-height: 1.6em;
+  line-height: 2em;
   font-weight: bold;
 }
-.clients .client:hover {
-  color: #00f;
+.clients .client a {
+  cursor: pointer;
 }
-.page_report .controls {
+.clients .client a:hover {
+  color: #03a;
+}
+.spinner {
+  width: 3.6em;
+}
+.page_report .controls,
+.page_fetching .controls {
   display: none;
+}
+.page_fetching,
+.loader {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.page_fetching .app,
+.loader .app {
+  text-align: center;
+}
+.loader {
+  flex-direction: column;
 }
 .report .item {
   display: flex;
   margin-bottom: 0.3em;
-  font-size: 0.88em;
 }
 .report .item label {
   width: 13em;
@@ -23,4 +61,38 @@ body {
 .report .dividend,
 .report .payslip {
   margin-bottom: 1em;
+}
+body.progress {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  margin: 0;
+  padding: 0.5em;
+  box-sizing: border-box;
+  overflow: hidden;
+}
+body.progress .info {
+  display: flex;
+  justify-content: space-between;
+}
+body.progress .info .text {
+  flex: 1;
+}
+body.progress .info .ptext {
+  margin: 0 0.5em;
+}
+body.progress .progress-holder {
+  width: 100%;
+  flex: 1;
+  position: relative;
+  margin: 0.5em 0;
+}
+body.progress .progress-holder .progress-bar {
+  background: #000;
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 0;
+  height: 100%;
+  transition: width 0.1s;
 }

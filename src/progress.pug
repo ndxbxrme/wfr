@@ -1,0 +1,13 @@
+html
+  head
+    link(rel='stylesheet', href='./index.css')
+  body.progress
+    .info
+      .text
+      .ptext
+      .cancel
+        input(type='button', onclick='app.cancel()', value='Cancel')
+    .progress-holder
+      .progress-bar(style='width:0%')
+    script(type='text/javascript').
+      require('./progress.js');

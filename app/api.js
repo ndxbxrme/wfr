@@ -10,12 +10,10 @@ const fa_handleToken = (err, response, resolve, reject) => {
   token = response.body;
   const expires = token.expires;
   token.expires = new Date(new Date().getTime() + expires * 1000);
-  console.log(tokenHandler.toString());
   tokenHandler(token);
   resolve(token);
 };
 const fa_doAuth = async () => {
-  console.log('do auth')
   return new Promise((resolve, reject) => {
     const grantType = 'authorization_code';
     superagent.post(faUri + 'token_endpoint')
@@ -27,7 +25,6 @@ const fa_doAuth = async () => {
     })
     .end((err, response) => {
       if(err) console.log('err', err);
-      console.log('got token');
       fa_handleToken(err, response, resolve, reject);
     });
   });

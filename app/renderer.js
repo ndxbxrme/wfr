@@ -18,21 +18,50 @@ const App = () => {
   ipcRenderer.on('clients', (win, data) => {
     //refresh clients list
     clients = data;
-    renderClients(data);
+    if(!clients.length) {
+      $('.app').innerHTML = fill($('script#fetching').innerText, {name:'Fetching clients'});
+      $('body').className = $('body').className.replace(/\s*page_\w+/g, '') + ' page_fetching'
+    }
+    else {
+      renderClients(data);
+      $('body').className = $('body').className.replace(/\s*page_\w+/g, '') + ' page_clients'
+    }
   });
   ipcRenderer.on('report', (win, data) => {
     renderReport(data);
   });
-  $('body').className = $('body').className.replace(/\s*page_\w+/g, '') + ' page_clients';
+  $('body').className = $('body').className.replace(/\s*page_\w+/g, '') + ' page_fetching';
   return {
     $,
     fill,
     currency: (num) => '&pound' + (+num).toFixed(2),
     makeReport: subdomain => {
-      if(!$('#dateFrom').value || !$('#dateTo').value) return;
-      if($('#dateFrom').value >= $('#dateTo').value) return;
-      const [client] = clients.filter(client => client.subdomain === subdomain);
+      if(!$('#dateFrom').value || !$('#dateTo').value) {
+        ipcRenderer.send('error', {message: 'Please select a date range'});
+        return;
+      }
+      if($('#dateFrom').value >= $('#dateTo').value) {
+        ipcRenderer.send('error', {message: 'Please select valid a date range'});
+        return;
+      }
       ipcRenderer.send('makeReport', {
+        dateFrom: $('#dateFrom').value,
+        dateTo: $('#dateTo').value
+      });
+      //$('.app').innerHTML = fill($('script#loading').innerText, client);
+      //$('body').className = $('body').className.replace(/\s*page_\w+/g, '') + ' page_report'
+    },
+    singleReport: subdomain => {
+      if(!$('#dateFrom').value || !$('#dateTo').value) {
+        ipcRenderer.send('error', {message: 'Please select a date range'});
+        return;
+      }
+      if($('#dateFrom').value >= $('#dateTo').value) {
+        ipcRenderer.send('error', {message: 'Please select a valid date range'});
+        return;
+      }
+      const [client] = clients.filter(client => client.subdomain === subdomain);
+      ipcRenderer.send('singleReport', {
         client,
         dateFrom: $('#dateFrom').value,
         dateTo: $('#dateTo').value
@@ -40,6 +69,10 @@ const App = () => {
       $('.app').innerHTML = fill($('script#loading').innerText, client);
       $('body').className = $('body').className.replace(/\s*page_\w+/g, '') + ' page_report'
     },
+    
+    
+    
+    
     search: (val) => {
       search = val;
       renderClients(clients);
