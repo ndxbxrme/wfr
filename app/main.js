@@ -60,7 +60,7 @@ const ready = async () => {
     }));
     mainWindow.once('ready-to-show', getClients);
   }
-  mainWindow.openDevTools();
+  //mainWindow.openDevTools();
 };
 const getClients = async () => {
   clients = (await getLocal('clients')) || [];
@@ -135,7 +135,13 @@ ipcMain.on('cancel', () => {
 ipcMain.on('error', (win, data) => {
   dialog.showErrorBox(data.title || 'Error', data.message);
   
-})
+});
+ipcMain.on('logout', () => {
+  delete settings.code;
+  delete settings.token;
+  saveLocal('settings', settings);
+  app.exit();
+});
 app.on('ready', ready);
 app.on('window-all-closed', () => process.platform==='darwin' || app.quit());
 app.on('activate', () => mainWindow || ready());

@@ -17,6 +17,17 @@ body {
   flex: 1;
   margin-left: 1em;
 }
+.controls .mr-search {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+}
+.controls .mr-search #logout {
+  margin-bottom: 0.5em;
+}
+.controls .mr-search #search {
+  padding: 0.3em;
+}
 .clients {
   margin-top: 1em;
 }

@@ -14,6 +14,7 @@ html
       .mr-button
         input#makeReport(type='button', onclick='app.makeReport()', value='Make Report')
       .mr-search
+        input#logout(type='button', onclick='app.logout()', value='Log out')
         input#search(type='text', onkeyup='app.search(this.value)', placeholder='Search Clients')
     .app
     script#clients(type='text/template')

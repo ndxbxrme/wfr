@@ -69,6 +69,9 @@ const App = () => {
       $('.app').innerHTML = fill($('script#loading').innerText, client);
       $('body').className = $('body').className.replace(/\s*page_\w+/g, '') + ' page_report'
     },
+    logout: () => {
+      ipcRenderer.send('logout');
+    },
     
     
     
