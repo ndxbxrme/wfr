@@ -105,7 +105,7 @@ ipcMain.on('makeReport', async (win, data) => {
       return res;
     }, []);
     finalReport.unshift(['Company.ID', 'Company.Subdomain', 'Company.CRN', 'Company.CompanyName', 'Shareholder.Nominal', 'Shareholder.User', 'Shareholder.Name', 'Shareholder.NiNo', 'Shareholder.TotalDividends', 'Payroll.User', 'Payroll.Name', 'Payroll.NiNo', 'Payroll.GrossPay', 'Payroll.TaxPaid', 'Payroll.StudentLoanRepayment', 'Payroll.PostgradLoanRepayment', 'Payroll.P45GrossPay', 'Payroll.P45TaxPaid']);
-    const csv = finalReport.map(row => JSON.stringify(row).replace(/^\[|\]$/g, '')).join('\n');
+    const csv = finalReport.map(row => JSON.stringify(row).replace(/^\[|\]$/g, '')).join('\r\n');
 
     mainWindow.webContents.send('endProcessing');
     progressWindow.close();
