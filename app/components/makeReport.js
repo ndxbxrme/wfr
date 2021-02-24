@@ -1,12 +1,22 @@
 const api = require('../api.js');
 const dec = require('decimalmath');
+const {app} = require('electron');
+const fs = require('fs-extra');
+const path = require('path');
+const outFile = path.join(app.getPath('desktop'), 'wfr-debug.txt');
 
 module.exports = (client, dateFrom, dateTo) => {
   return new Promise(async (resolve, reject) => {
+    await fs.appendFile(outFile, 'Client: ' + client.subdomain + '\n');
+    await fs.appendFile(outFile, 'Date: ' + 'from_date=' + dateFrom.toISOString().split(/T/)[0] + '&to_date=' + dateTo.toISOString().split(/T/)[0] + '\n');
     const {categories} = await require('./getDividendDetails.js')(client.subdomain);
     const users = await require('./getUsers.js')(client.subdomain);
+    await fs.appendFile(outFile, 'Users: ' + users.length + '\n');
     const payroll = await require('./getPayroll.js')(client.subdomain, dateFrom, dateTo);
+    
+    await fs.appendFile(outFile, 'Payroll: ' + payroll.length + '\n');
     const dividends = await require('./getDividends.js')(client.subdomain, dateFrom, dateTo);
+    await fs.appendFile(outFile, 'Dividends: ' + dividends.length + '\n');
     users.forEach(user => {
       user.payroll = payroll.filter(payslip => payslip.user === user.url && new Date(payslip.dated_on) >= dateFrom && new Date(payslip.dated_on) <= dateTo);
       user.dividends = dividends.filter(dividend => new RegExp(user.first_name + ' ' + user.last_name + '$').test(dividend.name));
