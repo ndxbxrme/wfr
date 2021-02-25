@@ -3,7 +3,7 @@ const dec = require('decimalmath');
 const {app} = require('electron');
 const fs = require('fs-extra');
 const path = require('path');
-const outFile = path.join(app.getPath('desktop'), 'wfr-debug.txt');
+const outFile = path.join(app.getPath('desktop'), 'wfr-debug1.txt');
 
 module.exports = (client, dateFrom, dateTo) => {
   return new Promise(async (resolve, reject) => {
