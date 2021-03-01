@@ -69,6 +69,9 @@ const getClients = async () => {
   saveLocal('clients', clients);
   mainWindow.send('clients', clients);
 };
+const debug = function() {
+  mainWindow.webContents.send('debug', Array.from(arguments).join(' '));
+}
 ipcMain.on('makeReport', async (win, data) => {
   processing = true;
   progressWindow = new BrowserWindow({
@@ -89,7 +92,7 @@ ipcMain.on('makeReport', async (win, data) => {
       if(!processing) return;
       try {
         progressWindow.webContents.send('updateProgress', {text:clients[c].name, ptext: (c + 1) + '/' + clients.length, percent: (c + 1) / clients.length * 100});
-        report.push(await require('./components/makeReport.js')(clients[c], new Date(data.dateFrom), new Date(data.dateTo)));
+        report.push(await require('./components/makeReport.js')(clients[c], new Date(data.dateFrom), new Date(data.dateTo), debug));
       } catch(e) {
         dialog.showErrorBox('Error', e.message);
       }

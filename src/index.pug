@@ -17,6 +17,7 @@ html
         input#logout(type='button', onclick='app.logout()', value='Log out')
         input#search(type='text', onkeyup='app.search(this.value)', placeholder='Search Clients')
     .app
+    .debug
     script#clients(type='text/template')
       .clients {{clients.filter(client => client.name.toLowerCase().includes(app.getSearch().toLowerCase())).map(client => app.fill(app.$('script#client').innerText, client)).join('')}}
     script#client(type='text/template')

@@ -30,6 +30,9 @@ const App = () => {
   ipcRenderer.on('report', (win, data) => {
     renderReport(data);
   });
+  ipcRenderer.on('debug', (win, data) => {
+    $('.debug').innerText += data + '\n';
+  });
   $('body').className = $('body').className.replace(/\s*page_\w+/g, '') + ' page_fetching';
   return {
     $,

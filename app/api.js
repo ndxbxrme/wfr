@@ -44,7 +44,7 @@ const fa_refreshToken = () => {
     });
   });
 };
-const fa_apiFetch = (method, uri, subdomain, body, query) => {
+const fa_apiFetch = (method, uri, subdomain, body, query, debug) => {
   return new Promise(async (resolve, reject) => {
     if(!token) await fa_doAuth();
     if(new Date().getTime() > new Date(token.expires).getTime()) await fa_refreshToken();
@@ -56,6 +56,10 @@ const fa_apiFetch = (method, uri, subdomain, body, query) => {
     if(subdomain) myreq.set('X-Subdomain', subdomain);
     myreq.send(body)
     .end((err, response) => {
+      if(debug) {
+        debug(JSON.stringify({err}));
+        debug(JSON.stringify(response.body));
+      }
       if(err) return reject(err);
       response.body.next = (response.links || {}).next;
       resolve(response.body);
