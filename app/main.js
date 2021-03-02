@@ -94,7 +94,7 @@ ipcMain.on('makeReport', async (win, data) => {
         progressWindow.webContents.send('updateProgress', {text:clients[c].name, ptext: (c + 1) + '/' + clients.length, percent: (c + 1) / clients.length * 100});
         report.push(await require('./components/makeReport.js')(clients[c], new Date(data.dateFrom), new Date(data.dateTo), debug));
       } catch(e) {
-        dialog.showErrorBox('Error', e.message);
+        dialog.showErrorBox('Error', e.stack);
       }
     }
     const finalReport = report.reduce((res, client) => {
