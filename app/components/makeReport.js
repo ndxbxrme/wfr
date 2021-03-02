@@ -1,5 +1,4 @@
 const api = require('../api.js');
-const dec = require('decimalmath');
 const {app} = require('electron');
 const fs = require('fs-extra');
 const path = require('path');
@@ -29,17 +28,17 @@ module.exports = (client, dateFrom, dateTo, debug) => {
           nino: user.ni_number,
           totalDividends: 0
         }
-        res[dividend.category].totalDividends = dec.add(res[dividend.category].totalDividends, +dividend.total);
+        res[dividend.category].totalDividends = res[dividend.category].totalDividends + +dividend.total;
         return res;
       }, {});
       user.dividends = Object.keys(user.dividends).map(key => user.dividends[key]);
       user.payroll = user.payroll.reduce((res, payslip) => {
-        res.grossPay = dec.add(res.grossPay, +payslip.basic_pay);
-        res.taxPaid = dec.add(res.taxPaid, +payslip.tax_deducted);
-        res.studentLoanRepayment = dec.add(res.studentLoanRepayment, +payslip.student_loan_deduction);
-        res.postgradLoanRepayment = dec.add(res.postgradLoanRepayment, +payslip.postgrad_loan_deduction);
-        res.p45GrossPay = dec.add(res.p45GrossPay, +user.current_payroll_profile.total_pay_in_previous_employment);
-        res.p45TaxPaid = dec.add(res.p45TaxPaid, +user.current_payroll_profile.total_tax_in_previous_employment);
+        res.grossPay = res.grossPay + +payslip.basic_pay;
+        res.taxPaid = res.taxPaid + +payslip.tax_deducted;
+        res.studentLoanRepayment = res.studentLoanRepayment + +payslip.student_loan_deduction;
+        res.postgradLoanRepayment = res.postgradLoanRepayment + +payslip.postgrad_loan_deduction;
+        res.p45GrossPay = res.p45GrossPay + +user.current_payroll_profile.total_pay_in_previous_employment;
+        res.p45TaxPaid = res.p45TaxPaid + +user.current_payroll_profile.total_tax_in_previous_employment;
         return res;
       }, {
         user: user.url,

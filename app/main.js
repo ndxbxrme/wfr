@@ -70,7 +70,7 @@ const getClients = async () => {
   mainWindow.send('clients', clients);
 };
 const debug = function() {
-  mainWindow.webContents.send('debug', Array.from(arguments).join(' '));
+  //mainWindow.webContents.send('debug', Array.from(arguments).join(' '));
 }
 ipcMain.on('makeReport', async (win, data) => {
   processing = true;
@@ -130,7 +130,7 @@ ipcMain.on('makeReport', async (win, data) => {
 
 });
 ipcMain.on('singleReport', async (win, data) => {
-  mainWindow.send('report', await require('./components/makeReport.js')(data.client, new Date(data.dateFrom), new Date(data.dateTo)));
+  mainWindow.send('report', await require('./components/makeReport.js')(data.client, new Date(data.dateFrom), new Date(data.dateTo), debug));
 })
 ipcMain.on('cancel', () => {
   processing = false;
