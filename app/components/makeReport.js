@@ -15,20 +15,22 @@ module.exports = (client, dateFrom, dateTo, debug) => {
     
     debug(outFile, 'Payroll: ' + payroll.length + '\n');
     const dividends = await require('./getDividends.js')(client.subdomain, dateFrom, dateTo, debug);
-    debug(outFile, 'Dividends: ' + dividends.length + '\n');
+    debug(outFile, 'Dividends: ' + JSON.stringify(dividends) + '\n');
     users.forEach(user => {
       user.payroll = payroll.filter(payslip => payslip.user === user.url && new Date(payslip.dated_on) >= dateFrom && new Date(payslip.dated_on) <= dateTo);
       user.dividends = dividends.filter(dividend => new RegExp(user.first_name + ' ' + user.last_name + '$').test(dividend.name));
       user.dividends = user.dividends.reduce((res, dividend) => {
         [category] = categories.filter(category => category.url === dividend.category);
-        res[dividend.category] = res[dividend.category] || {
-          nominal: category.nominal_code,
-          user: user.url,
-          name: user.first_name + ' ' + user.last_name,
-          nino: user.ni_number,
-          totalDividends: 0
+        if(category.nominal_code.toString()==='908') {
+          res[dividend.display_nominal_code] = res[dividend.display_nominal_code] || {
+            nominal: dividend.display_nominal_code,
+            user: user.url,
+            name: user.first_name + ' ' + user.last_name,
+            nino: user.ni_number,
+            totalDividends: 0
+          };
+          res[dividend.display_nominal_code].totalDividends = res[dividend.display_nominal_code].totalDividends + +dividend.total;
         }
-        res[dividend.category].totalDividends = res[dividend.category].totalDividends + +dividend.total;
         return res;
       }, {});
       user.dividends = Object.keys(user.dividends).map(key => user.dividends[key]);
