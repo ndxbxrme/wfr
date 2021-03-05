@@ -10,7 +10,14 @@ const App = () => {
     } catch(e) { return ''; } 
   });
   const renderClients = clients => {
+    const checkedIds = $$('.clients .client input[type=checkbox]:checked').map(box => box.id);
     $('.app').innerHTML = fill($('script#clients').innerText, {clients});
+    $$('.clients .client input[type=checkbox]').forEach(box => box.checked = false);
+    console.log('ids', checkedIds);
+    checkedIds.forEach(id => $('#' + id) && ($('#' + id).checked = true));
+    const noboxes = $$('.clients .client input[type=checkbox]').length;
+    const nochecked = $$('.clients .client input[type=checkbox]:checked').length;
+    $('.app input[type=checkbox]').checked = noboxes === nochecked;
   };
   const renderReport = report => {
     $('.app').innerHTML = fill($('script#report').innerText, report);
@@ -24,6 +31,8 @@ const App = () => {
     }
     else {
       renderClients(data);
+      $$('.clients .client input[type=checkbox]').forEach(box => box.checked = true);
+      $('.app input[type=checkbox]').checked = true;
       $('body').className = $('body').className.replace(/\s*page_\w+/g, '') + ' page_clients'
     }
   });
@@ -47,9 +56,15 @@ const App = () => {
         ipcRenderer.send('error', {message: 'Please select valid a date range'});
         return;
       }
+      const ids = $$('.clients .client input[type=checkbox]:checked').map(box => box.id.replace(/^c/, ''));
+      if(!ids.length) {
+        ipcRenderer.send('error', {message: 'Please select at least one client'});
+        return;
+      }
       ipcRenderer.send('makeReport', {
         dateFrom: $('#dateFrom').value,
-        dateTo: $('#dateTo').value
+        dateTo: $('#dateTo').value,
+        ids: ids
       });
       //$('.app').innerHTML = fill($('script#loading').innerText, client);
       //$('body').className = $('body').className.replace(/\s*page_\w+/g, '') + ' page_report'
@@ -75,12 +90,22 @@ const App = () => {
     logout: () => {
       ipcRenderer.send('logout');
     },
+    doSelect: (id, checked) => {
+      if(id==='selectAll') {
+        $$('.clients .client input[type=checkbox]').forEach(box => box.checked = checked);
+      } else {
+        const noboxes = $$('.clients .client input[type=checkbox]').length;
+        const nochecked = $$('.clients .client input[type=checkbox]:checked').length;
+        $('.app input[type=checkbox]').checked = noboxes === nochecked;
+      }
+    },
     
     
     
     
     search: (val) => {
       search = val;
+      console.log(clients);
       renderClients(clients);
     },
     getSearch: () => search,

@@ -86,13 +86,13 @@ ipcMain.on('makeReport', async (win, data) => {
   progressWindow.loadURL(url.format({pathname: path.join(__dirname, 'progress.html'),protocol:'file:',slashes:true}));
   progressWindow.once('ready-to-show', async () => {
     progressWindow.show()
-  
+    const filteredClients = clients.filter(client => data.ids.includes(client.subdomain));
     const report = [];
-    for(let c=0; c<clients.length; c++) {
+    for(let c=0; c<filteredClients.length; c++) {
       if(!processing) return;
       try {
-        progressWindow.webContents.send('updateProgress', {text:clients[c].name, ptext: (c + 1) + '/' + clients.length, percent: (c + 1) / clients.length * 100});
-        report.push(await require('./components/makeReport.js')(clients[c], new Date(data.dateFrom), new Date(data.dateTo), debug));
+        progressWindow.webContents.send('updateProgress', {text:filteredClients[c].name, ptext: (c + 1) + '/' + filteredClients.length, percent: (c + 1) / filteredClients.length * 100});
+        report.push(await require('./components/makeReport.js')(filteredClients[c], new Date(data.dateFrom), new Date(data.dateTo), debug));
       } catch(e) {
         dialog.showErrorBox('Error', e.stack);
       }
@@ -104,7 +104,8 @@ ipcMain.on('makeReport', async (win, data) => {
         const userDividends = client.dividends.filter(dividend => dividend.name === payroll.name);
         userDividends.forEach(dividend => {
           const dividendData = [dividend.nominal, +dividend.user.match(/\d+$/)[0], dividend.name, dividend.nino, dividend.totalDividends];
-          res.push([...clientData, ...dividendData, ...payrollData]);
+          if(dividend.totalDividend || payroll.grossPay || payroll.taxPaid || payroll.studentLoanRepayment || payroll.postgradLoanRepayment || payroll.p45GrossPay || payroll.p45TaxPaid)
+            res.push([...clientData, ...dividendData, ...payrollData]);
         })
       })
       return res;

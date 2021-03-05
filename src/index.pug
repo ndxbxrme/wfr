@@ -6,7 +6,7 @@ html
     .controls
       .mr-dates
         .item
-          label(for='dateFrom') Date From1
+          label(for='dateFrom') Date From
           input#dateFrom(type='date')
         .item
           label(for='dateTo') Date To
@@ -19,9 +19,12 @@ html
     .app
     //.debug
     script#clients(type='text/template')
+      input(type='checkbox', checked, onchange='app.doSelect(this.id, this.checked)', id='selectAll') 
+      | Select All
       .clients {{clients.filter(client => client.name.toLowerCase().includes(app.getSearch().toLowerCase())).map(client => app.fill(app.$('script#client').innerText, client)).join('')}}
     script#client(type='text/template')
       .client
+        input(type='checkbox', checked, onchange='app.doSelect(this.id, this.value)', id='c{{subdomain}}')
         a(onclick='app.singleReport("{{subdomain}}")') {{name}}
     script#loading(type='text/template')
       .loader
