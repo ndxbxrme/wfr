@@ -58,7 +58,7 @@ const ready = async () => {
   });
   mainWindow.on('closed', () => mainWindow = null);
   if(!settings.code) {
-    mainWindow.loadURL('https://login.freeagent.com/login?extra_login_params%5Bafter_login_path%5D=%2Fapp_approvals%2Fnew%3Fclient_id%3DyMCbudV-5I5RIuArSOa_7w%26redirect_uri%3Dhttps%253A%252F%252Fapi.freeagent.com%26response_type%3Dcode%26state%3Dxyz&extra_login_params%5Blogin_prompt%5D=app_approval');
+    mainWindow.loadURL('https://login.freeagent.com/login?extra_login_params%5Bafter_login_path%5D=%2Fapp_approvals%2Fnew%3Fclient_id%3DoIyo3GJiJ_NdmxSUzdrlHw%26redirect_uri%3Dhttps%253A%252F%252Fapi.freeagent.com%26response_type%3Dcode%26state%3Dxyz&extra_login_params%5Blogin_prompt%5D=app_approval');
   }
   else {
     mainWindow.loadURL(url.format({
@@ -66,6 +66,7 @@ const ready = async () => {
       protocol: 'file:',
       slashes: true
     }));
+    mainWindow.send('clients', clients);
     mainWindow.once('ready-to-show', getClients);
   }
   //mainWindow.openDevTools();
@@ -75,6 +76,7 @@ const getClients = async () => {
   if(shouldClearClients) clients = [];
   mainWindow.send('clients', clients);
   clients = await require('./components/getClients.js');
+  clients.sort((a, b) => a.name > b.name ? 1 : -1);
   saveLocal('clients', clients);
   mainWindow.send('clients', clients);
 };

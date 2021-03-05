@@ -22,8 +22,12 @@ const App = () => {
   const renderReport = report => {
     $('.app').innerHTML = fill($('script#report').innerText, report);
   }
+  
+  $('.app').innerHTML = fill($('script#fetching').innerText, {name:'Fetching clients'});
+  $('body').className = $('body').className.replace(/\s*page_\w+/g, '') + ' page_fetching'
   ipcRenderer.on('clients', (win, data) => {
     //refresh clients list
+    console.log('got client data', data);
     clients = data;
     if(!clients.length) {
       $('.app').innerHTML = fill($('script#fetching').innerText, {name:'Fetching clients'});

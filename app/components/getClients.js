@@ -5,10 +5,12 @@ module.exports = new Promise(async (resolve, reject) => {
   let clients = [];
   let response = (await api.fetch('get', fetchUrl));
   while(response.next) {
+    console.log('got clients', response.next);
     clients = [...clients, ...response.clients];
-    response = (await api.fetch('get', fetchUrl));
+    response = (await api.fetch('get', response.next.replace(api.faUri, '')));
   }
   clients = [...clients, ...response.clients];
+  console.log('finished fetch', clients.length);
   resolve(clients.map(client => {
     return {
       id: client.id,
