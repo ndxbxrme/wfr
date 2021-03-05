@@ -34,11 +34,13 @@ const ready = async () => {
   settings = mysettings || settings;
   api.setCode(settings.code);
   api.setToken(settings.token);
-  settings.webPreferences = {nodeIntegration: true};
+  settings.webPreferences = {nodeIntegration: true, enableRemoteModule:true, preload: path.join(__dirname, 'preload.js')};
   mainWindow = new BrowserWindow(settings);
   session.defaultSession.webRequest.onBeforeRequest({urls:['*://*.freeagent.com/*']}, (details, cb) => {
     const code = (details.url.match(/\/\?code=(.*?)&/) || [])[1];
+    //console.log('free', details.url);
     if(code) {
+      console.log('got code', code);
       api.setCode(code);
       api.setToken(null);
       settings.code = code;
