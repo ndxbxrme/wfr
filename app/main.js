@@ -11,6 +11,7 @@ let clients = [];
 let mainWindow = null;
 let progressWindow = null;
 let errorWindow = null;
+let shouldClearClients = false;
 let settings = {
   width: 700,
   height: 500
@@ -23,7 +24,14 @@ const ready = async () => {
   autoUpdater.checkForUpdatesAndNotify();
   const applicationMenu = Menu.buildFromTemplate([]);
   Menu.setApplicationMenu(applicationMenu);
-  settings = (await getLocal('settings')) || settings;
+  let mysettings = await getLocal('settings');
+  if(mysettings.version!=='2') {
+    mysettings = settings;
+    settings.version = '2';
+    saveLocal('settings', settings);
+    shouldClearClients = true;
+  }
+  settings = mysettings || settings;
   api.setCode(settings.code);
   api.setToken(settings.token);
   settings.webPreferences = {nodeIntegration: true};
@@ -50,7 +58,7 @@ const ready = async () => {
   });
   mainWindow.on('closed', () => mainWindow = null);
   if(!settings.code) {
-    mainWindow.loadURL('https://login.sandbox.freeagent.com/login?extra_login_params%5Bafter_login_path%5D=%2Fapp_approvals%2Fnew%3Fclient_id%3DyMCbudV-5I5RIuArSOa_7w%26redirect_uri%3Dhttps%253A%252F%252Fapi.sandbox.freeagent.com%26response_type%3Dcode%26state%3Dxyz&extra_login_params%5Blogin_prompt%5D=app_approval');
+    mainWindow.loadURL('https://login.freeagent.com/login?extra_login_params%5Bafter_login_path%5D=%2Fapp_approvals%2Fnew%3Fclient_id%3DyMCbudV-5I5RIuArSOa_7w%26redirect_uri%3Dhttps%253A%252F%252Fapi.freeagent.com%26response_type%3Dcode%26state%3Dxyz&extra_login_params%5Blogin_prompt%5D=app_approval');
   }
   else {
     mainWindow.loadURL(url.format({
@@ -64,6 +72,7 @@ const ready = async () => {
 };
 const getClients = async () => {
   clients = (await getLocal('clients')) || [];
+  if(shouldClearClients) clients = [];
   mainWindow.send('clients', clients);
   clients = await require('./components/getClients.js');
   saveLocal('clients', clients);
