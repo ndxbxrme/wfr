@@ -33,6 +33,7 @@ body {
 }
 .controls .mr-search #logout {
   margin-bottom: 0.5em;
+  margin-top: 0.5em;
 }
 .controls .mr-search #search {
   padding: 0.3em;

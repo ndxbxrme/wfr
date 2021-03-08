@@ -51,6 +51,10 @@ const App = () => {
     $,
     fill,
     currency: (num) => '&pound' + (+num).toFixed(2),
+    refreshClients: () => {
+      ipcRenderer.send('refreshClients');
+      $('body').className = $('body').className.replace(/\s*page_\w+/g, '') + ' page_fetching';
+    },
     makeReport: subdomain => {
       if(!$('#dateFrom').value || !$('#dateTo').value) {
         ipcRenderer.send('error', {message: 'Please select a date range'});
