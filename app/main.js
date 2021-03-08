@@ -192,6 +192,8 @@ ipcMain.on('logout', () => {
   delete settings.code;
   delete settings.token;
   saveLocal('settings', settings);
+  clients = [];
+  saveLocal('clients', clients);
   app.exit();
 });
 app.on('ready', ready);
