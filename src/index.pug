@@ -7,10 +7,10 @@ html
       .mr-dates
         .item
           label(for='dateFrom') Date From
-          input#dateFrom(type='date')
+          input#dateFrom(type='date', value='2021-01-01')
         .item
           label(for='dateTo') Date To
-          input#dateTo(type='date')
+          input#dateTo(type='date', value='2022-01-01')
       .mr-button
         input#makeReport(type='button', onclick='app.makeReport()', value='Make Report')
       .mr-search

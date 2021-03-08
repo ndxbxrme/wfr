@@ -46,6 +46,7 @@ const fa_refreshToken = () => {
 };
 const fa_apiFetch = (method, uri, subdomain, body, query, debug) => {
   return new Promise(async (resolve, reject) => {
+    console.log(method, uri, subdomain);
     if(!token) await fa_doAuth();
     if(new Date().getTime() > new Date(token.expires).getTime()) await fa_refreshToken();
     const myreq = superagent[method](faUri + uri);

@@ -1,0 +1,64 @@
+<html>
+  <head>
+    <style type="text/css">
+      html, body {
+        margin: 0;
+        height: 100%; max-height: 100%;
+        font-family: sans-serif;
+        display: flex;
+        flex-direction: column;
+        font-size: 0.8em;
+      }
+      table {
+        width: 100%;
+        font-size: 1em;
+      }
+      table td {
+        padding: .3em;
+      }
+      .table {
+        flex: 1;
+        overflow-y: scroll;
+        background: #cfd6da;
+      }
+      .controls {
+        padding: 1em;
+        display: flex;
+        justify-content: flex-end;
+      }
+      .controls input {
+        margin: .1em;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="table">
+      <table></table>
+    </div>
+    <div class="controls">
+      <input type="button" onclick="app.cancel()" value="Cancel" />
+      <input type="button" onclick="app.ok()" value="Save Report" />
+    </div>
+    <script type="text/javascript">
+      const {ipcRenderer} = require('electron');
+      ipcRenderer.on('errorReport', (win, data) => {
+        console.log(data);
+        let html = '';
+        data.forEach(row => {
+          row.user = row.user || {name: ''};
+          html += '<tr><td class="client">' + row.client.name + '</td><td class="user">' + row.user.name + '</td><td class="message">' + row.message + '</td></tr>';
+        });
+        document.querySelector('table').innerHTML = html;
+      });
+      window.app = {
+        cancel: () => {
+          console.log('cancelling');
+          ipcRenderer.send('errorReportCancel');
+        },
+        ok: () => {
+          ipcRenderer.send('errorReportOk');
+        }
+      };
+    </script>
+  </body>
+</html>

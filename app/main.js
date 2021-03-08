@@ -77,6 +77,13 @@ const getClients = async () => {
   clients = (await getLocal('clients')) || [];
   if(shouldClearClients) clients = [];
   mainWindow.send('clients', clients);
+  if(!clients.length) {
+    getRemoteClients();
+  }
+};
+const getRemoteClients = async () => {
+  clients = [];
+  mainWindow.send('clients', clients);
   clients = await require('./components/getClients.js');
   clients.sort((a, b) => a.name > b.name ? 1 : -1);
   saveLocal('clients', clients);
@@ -85,6 +92,7 @@ const getClients = async () => {
 const debug = function() {
   //mainWindow.webContents.send('debug', Array.from(arguments).join(' '));
 }
+ipcMain.on('refreshClients', getRemoteClients);
 ipcMain.on('makeReport', async (win, data) => {
   processing = true;
   progressWindow = new BrowserWindow({
@@ -99,6 +107,7 @@ ipcMain.on('makeReport', async (win, data) => {
   progressWindow.loadURL(url.format({pathname: path.join(__dirname, 'progress.html'),protocol:'file:',slashes:true}));
   progressWindow.once('ready-to-show', async () => {
     progressWindow.show()
+    const errorReport = [];
     const filteredClients = clients.filter(client => data.ids.includes(client.subdomain));
     const report = [];
     for(let c=0; c<filteredClients.length; c++) {
@@ -107,19 +116,21 @@ ipcMain.on('makeReport', async (win, data) => {
         progressWindow.webContents.send('updateProgress', {text:filteredClients[c].name, ptext: (c + 1) + '/' + filteredClients.length, percent: (c + 1) / filteredClients.length * 100});
         report.push(await require('./components/makeReport.js')(filteredClients[c], new Date(data.dateFrom), new Date(data.dateTo), debug));
       } catch(e) {
-        dialog.showErrorBox('Error', e.stack);
+        errorReport.push({client:filteredClients[c],message:e.message});
+        //dialog.showErrorBox('Error', e.stack);
       }
     }
+    //console.log('report', report);
     const finalReport = report.reduce((res, client) => {
       const clientData = [client.id, client.subdomain, client.crn, client.name];
       client.payroll.forEach(payroll => {
         const payrollData = [+payroll.user.match(/\d+$/)[0], payroll.name, payroll.nino, payroll.grossPay, payroll.taxPaid, payroll.studentLoanRepayment, payroll.postgradLoanRepayment, payroll.p45GrossPay, payroll.p45TaxPaid];
-        const userDividends = client.dividends.filter(dividend => dividend.name === payroll.name);
-        userDividends.forEach(dividend => {
-          const dividendData = [dividend.nominal, +dividend.user.match(/\d+$/)[0], dividend.name, dividend.nino, dividend.totalDividends];
-          if(dividend.totalDividend || payroll.grossPay || payroll.taxPaid || payroll.studentLoanRepayment || payroll.postgradLoanRepayment || payroll.p45GrossPay || payroll.p45TaxPaid)
-            res.push([...clientData, ...dividendData, ...payrollData]);
-        })
+        const dividend = client.dividends.filter(dividend => dividend.name === payroll.name)[0] || {user:'0'};
+        const dividendData = [dividend.nominal || 0, +dividend.user.match(/\d+$/)[0], dividend.name || '', dividend.nino || '', dividend.totalDividends || 0];
+        if(dividend.totalDividend || payroll.grossPay || payroll.taxPaid || payroll.studentLoanRepayment || payroll.postgradLoanRepayment || payroll.p45GrossPay || payroll.p45TaxPaid)
+          res.push([...clientData, ...dividendData, ...payrollData]);
+        else
+          errorReport.push({client,user:payroll,message:'Zero dividend and payroll'});
       })
       return res;
     }, []);
@@ -129,6 +140,28 @@ ipcMain.on('makeReport', async (win, data) => {
     mainWindow.webContents.send('endProcessing');
     progressWindow.close();
     processing = false;
+    if(errorReport.length) {
+      const errorReportWindow = new BrowserWindow({
+        width: 500,
+        height: 400,
+        webPreferences: {
+          nodeIntegration: true
+        }
+      });
+      //errorReportWindow.openDevTools();
+      try {
+        await new Promise((resolve, reject) => {
+          errorReportWindow.loadURL(url.format({pathname: path.join(__dirname, 'error-report.html'),protocol:'file:',slashes:true}));
+          errorReportWindow.once('ready-to-show', () => errorReportWindow.webContents.send('errorReport', errorReport));
+          ipcMain.on('errorReportOk', () => resolve());
+          ipcMain.on('errorReportCancel', () => {console.log('cancelled');reject()});
+        });
+        errorReportWindow.close();
+      } catch (e) {
+        errorReportWindow.close();
+        return;
+      }
+    }
     let filePath = dialog.showSaveDialogSync({
       defaultPath: 'freeagent-report_' + data.dateFrom + '_' + data.dateTo + '.csv',
       buttonLabel: 'Save Report',
