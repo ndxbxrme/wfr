@@ -17,7 +17,8 @@ module.exports = (client, dateFrom, dateTo, debug) => {
         user.dividends = dividends.filter(dividend => new RegExp(user.first_name + ' ' + user.last_name + '$').test(dividend.name));
         user.dividends = user.dividends.reduce((res, dividend) => {
           [category] = categories.filter(category => category.url === dividend.category);
-          if(category.nominal_code.toString()==='908') {
+          console.log('CATEGORY', category.nominal_code);
+          if(/^908/.test(category.nominal_code.toString())) {
             res[dividend.display_nominal_code] = res[dividend.display_nominal_code] || {
               nominal: dividend.display_nominal_code,
               user: user.url,
@@ -30,6 +31,7 @@ module.exports = (client, dateFrom, dateTo, debug) => {
           return res;
         }, {});
         user.dividends = Object.keys(user.dividends).map(key => user.dividends[key]);
+        console.log('user dividends', user.dividends);
         user.payroll = user.payroll.reduce((res, payslip) => {
           res.grossPay = res.grossPay + +payslip.basic_pay;
           res.taxPaid = res.taxPaid + +payslip.tax_deducted;

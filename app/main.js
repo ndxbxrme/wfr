@@ -127,7 +127,7 @@ ipcMain.on('makeReport', async (win, data) => {
         const payrollData = [+payroll.user.match(/\d+$/)[0], payroll.name, payroll.nino, payroll.grossPay, payroll.taxPaid, payroll.studentLoanRepayment, payroll.postgradLoanRepayment, payroll.p45GrossPay, payroll.p45TaxPaid];
         const dividend = client.dividends.filter(dividend => dividend.name === payroll.name)[0] || {user:'0'};
         const dividendData = [dividend.nominal || 0, +dividend.user.match(/\d+$/)[0], dividend.name || '', dividend.nino || '', dividend.totalDividends || 0];
-        if(dividend.totalDividend || payroll.grossPay || payroll.taxPaid || payroll.studentLoanRepayment || payroll.postgradLoanRepayment || payroll.p45GrossPay || payroll.p45TaxPaid)
+        if(dividend.totalDividends || payroll.grossPay || payroll.taxPaid || payroll.studentLoanRepayment || payroll.postgradLoanRepayment || payroll.p45GrossPay || payroll.p45TaxPaid) 
           res.push([...clientData, ...dividendData, ...payrollData]);
         else
           errorReport.push({client,user:payroll,message:'Zero dividend and payroll'});
