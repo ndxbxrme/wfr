@@ -25,6 +25,7 @@ const ready = async () => {
   const applicationMenu = Menu.buildFromTemplate([]);
   Menu.setApplicationMenu(applicationMenu);
   let mysettings = await getLocal('settings');
+  mysettings = mysettings || {};
   if(mysettings.version!=='2') {
     mysettings = settings;
     settings.version = '2';

@@ -1,6 +1,6 @@
 {
   "name": "workr-freeagent-report",
-  "version": "0.3.8",
+  "version": "0.3.9",
   "description": "",
   "main": "app/main.js",
   "scripts": {
