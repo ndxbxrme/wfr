@@ -1,5 +1,5 @@
 const {app, BrowserWindow, session, ipcMain, Menu, dialog, Notification} = require('electron');
-const {autoUpdater} = require('electron-updater');
+//const {autoUpdater} = require('electron-updater');
 const url = require('url');
 const path = require('path');
 const fs = require('fs-extra');
@@ -21,7 +21,7 @@ api.setTokenHanlder((token) => {
   saveLocal('settings', settings);
 })
 const ready = async () => {
-  autoUpdater.checkForUpdatesAndNotify();
+  //autoUpdater.checkForUpdatesAndNotify();
   const applicationMenu = Menu.buildFromTemplate([]);
   Menu.setApplicationMenu(applicationMenu);
   let mysettings = await getLocal('settings');
