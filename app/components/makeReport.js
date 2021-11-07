@@ -12,12 +12,13 @@ module.exports = (client, dateFrom, dateTo, debug) => {
       const payroll = await require('./getPayroll.js')(client.subdomain, dateFrom, dateTo, debug);
 
       const dividends = await require('./getDividends.js')(client.subdomain, dateFrom, dateTo, debug);
+      const payrollProfiles = await require('./getPayrollProfiles.js')(client.subdomain, dateFrom, dateTo, debug);
       users.forEach(user => {
         user.payroll = payroll.filter(payslip => payslip.user === user.url && new Date(payslip.dated_on) >= dateFrom && new Date(payslip.dated_on) <= dateTo);
+        user.payrollProfile = payrollProfiles.filter(profile => profile.user === user.url)[0];
         user.dividends = dividends.filter(dividend => new RegExp(user.first_name + ' ' + user.last_name + '$').test(dividend.name));
         user.dividends = user.dividends.reduce((res, dividend) => {
           [category] = categories.filter(category => category.url === dividend.category);
-          console.log('CATEGORY', category.nominal_code);
           if(/^908/.test(category.nominal_code.toString())) {
             res[dividend.display_nominal_code] = res[dividend.display_nominal_code] || {
               nominal: dividend.display_nominal_code,
@@ -31,14 +32,13 @@ module.exports = (client, dateFrom, dateTo, debug) => {
           return res;
         }, {});
         user.dividends = Object.keys(user.dividends).map(key => user.dividends[key]);
-        console.log('user dividends', user.dividends);
         user.payroll = user.payroll.reduce((res, payslip) => {
           res.grossPay = res.grossPay + +payslip.basic_pay;
           res.taxPaid = res.taxPaid + +payslip.tax_deducted;
           res.studentLoanRepayment = res.studentLoanRepayment + +payslip.student_loan_deduction;
           res.postgradLoanRepayment = res.postgradLoanRepayment + +payslip.postgrad_loan_deduction;
-          res.p45GrossPay = res.p45GrossPay + +user.current_payroll_profile.total_pay_in_previous_employment;
-          res.p45TaxPaid = res.p45TaxPaid + +user.current_payroll_profile.total_tax_in_previous_employment;
+          res.p45GrossPay = +user.payrollProfile.total_pay_in_previous_employment;
+          res.p45TaxPaid = +user.payrollProfile.total_tax_in_previous_employment;
           return res;
         }, {
           user: user.url,
